@@ -1,0 +1,20 @@
+# The ONLY containerized component is PostgreSQL.
+#
+# Casbin is NOT a service — it is an embedded library inside the Rust app. Postgres here
+# stores two things: the `casbin_rule` policy table (created automatically by sqlx-adapter)
+# and the `documents` table that the policies protect.
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: appdb
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d appdb"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
